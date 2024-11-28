@@ -18,11 +18,12 @@ async function mkdirRecursive(
       mode = parseFileMode(options.mode, 'options.mode');
     }
   }
-  const dirs = path.split('/');
+  const sep = path.includes('/') ? '/' : nodePath.sep;
+  const dirs = path.split(sep);
   let dirPath = '';
   const result: string[] = [];
   for (const dir of dirs) {
-    dirPath += `${dir}/`;
+    dirPath += `${dir}${sep}`;
     await mkdir(dirPath, mode);
   }
   async function mkdir(path: string, mode: MakeDirectoryOptions['mode']) {
