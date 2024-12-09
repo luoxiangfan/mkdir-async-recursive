@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import nodePath from 'node:path';
+import { sep, resolve } from 'node:path';
 import { parseFileMode } from './util.js';
 import type {
   MakeDirectoryOptions,
@@ -18,12 +18,12 @@ async function mkdirRecursive(
       mode = parseFileMode(options.mode, 'options.mode');
     }
   }
-  const sep = path.includes('/') ? '/' : nodePath.sep;
-  const dirs = path.split(sep);
+  const _sep = path.includes('/') ? '/' : sep;
+  const dirs = path.split(_sep);
   let dirPath = '';
   const result: string[] = [];
   for (const dir of dirs) {
-    dirPath += `${dir}${sep}`;
+    dirPath += `${dir}${_sep}`;
     await mkdir(dirPath, mode);
   }
   async function mkdir(path: string, mode: MakeDirectoryOptions['mode']) {
@@ -40,7 +40,7 @@ async function mkdirRecursive(
     return await Promise.resolve(undefined);
   }
   return await Promise.resolve(
-    result.length ? nodePath.resolve(result[0]) : undefined
+    result.length ? resolve(result[0]) : undefined
   );
 }
 
