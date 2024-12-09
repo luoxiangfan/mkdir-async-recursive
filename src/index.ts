@@ -1,10 +1,12 @@
-import fs from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { sep, resolve } from 'node:path';
 import { parseFileMode } from './util.js';
-import type {
+import type { MakeDirectoryOptions } from 'node:fs';
+
+type MakeDirectoryRecursiveOptions = Omit<
   MakeDirectoryOptions,
-  MakeDirectoryRecursiveOptions
-} from './type.js';
+  'recursive'
+>;
 
 async function mkdirRecursive(
   path: string,
@@ -27,9 +29,9 @@ async function mkdirRecursive(
     await mkdir(dirPath, mode);
   }
   async function mkdir(path: string, mode: MakeDirectoryOptions['mode']) {
-    if (!fs.existsSync(dirPath)) {
+    if (!existsSync(dirPath)) {
       try {
-        fs.mkdirSync(path, mode);
+        mkdirSync(path, mode);
         result.push(path);
         return await Promise.resolve(true);
       } catch (error) {
