@@ -3,10 +3,7 @@ import { sep, resolve } from 'node:path';
 import { parseFileMode } from './util.js';
 import type { MakeDirectoryOptions } from 'node:fs';
 
-type MakeDirectoryRecursiveOptions = Omit<
-  MakeDirectoryOptions,
-  'recursive'
->;
+type MakeDirectoryRecursiveOptions = Omit<MakeDirectoryOptions, 'recursive'>;
 
 async function mkdirRecursive(
   path: string,
@@ -26,24 +23,19 @@ async function mkdirRecursive(
   const result: string[] = [];
   for (const dir of dirs) {
     dirPath += `${dir}${_sep}`;
-    await mkdir(dirPath, mode);
+    mkdir(dirPath, mode);
   }
-  async function mkdir(path: string, mode: MakeDirectoryOptions['mode']) {
+  function mkdir(path: string, mode: MakeDirectoryOptions['mode']) {
     if (!existsSync(dirPath)) {
       try {
         mkdirSync(path, mode);
         result.push(path);
-        return await Promise.resolve(true);
       } catch (error) {
         console.error(error);
-        return await Promise.resolve(false);
       }
     }
-    return await Promise.resolve(undefined);
   }
-  return await Promise.resolve(
-    result.length ? resolve(result[0]) : undefined
-  );
+  return result.length ? resolve(result[0]) : undefined;
 }
 
 export { mkdirRecursive as default };
