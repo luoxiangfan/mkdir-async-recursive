@@ -48,10 +48,10 @@
   },
   "homepage": "https://github.com/luoxiangfan/mkdir-async-recursive#readme",
   "devDependencies": {
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.6",
     "prettier": "^3.4.2",
-    "typescript": "^5.7.2",
-    "unbuild": "^3.0.1"
+    "typescript": "^5.7.3",
+    "unbuild": "^3.3.1"
   },
   "publishConfig": {
     "access": "public"
