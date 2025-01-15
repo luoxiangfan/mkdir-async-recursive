@@ -1,6 +1,6 @@
 {
   "name": "mkdir-async-recursive",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Asynchronously and recursively creates a directory. Returns undefined or the first directory path created.",
   "type": "module",
   "main": "./dist/index.cjs",
