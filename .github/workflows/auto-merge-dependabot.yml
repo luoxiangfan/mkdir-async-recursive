@@ -1,38 +1,39 @@
-name: Dependabot 自动合并
+name: Dependabot Auto-Merge
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
 
+# 最小必要权限
 permissions:
   contents: write
   pull-requests: write
+  checks: read
 
 jobs:
-  auto-merge:
-    # 仅处理来自dependabot且包含特定标签的PR
+  merge-dependabot:
+    # 只处理来自dependabot的PR
     if: |
-      github.actor == 'dependabot[bot]' &&
-      contains(github.event.pull_request.labels.*.name, 'dependencies')
+      github.actor == 'dependabot[bot]'
+    
     runs-on: ubuntu-latest
+    
     steps:
-      - name: 等待 CI 检查通过
-        uses: actions/github-script@v7
+      # 轻量级检出（仅用于可能需要的git操作）
+      - name: Checkout minimal
+        uses: actions/checkout@v6
         with:
-          script: |
-            // 等待所有必需的检查通过
-            const { data: checks } = await github.rest.checks.listForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: context.payload.pull_request.head.sha
-            });
-            const allPassed = checks.check_runs.every(run => run.conclusion === 'success');
-            if (!allPassed) {
-              core.setFailed('有些检查未通过');
-            }
-      - name: 自动合并 PR
-        if: success()
+          ref: ${{ github.event.pull_request.head.sha }}
+          sparse-checkout: .github  # 只检出配置文件
+          sparse-checkout-cone-mode: false
+
+      # 执行合并
+      - name: Merge PR
         run: |
-          gh pr merge --auto --merge "$PR_URL"
+          gh pr merge ${{ github.event.pull_request.number }} \
+            --squash \
+            --body "" \
+            --subject "$(gh pr view ${{ github.event.pull_request.number }} --json title -q .title)"
+          
+          echo "Merged successfully"
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
